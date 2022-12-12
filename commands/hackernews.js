@@ -13,32 +13,34 @@ let topNewsIdAPI = async () => {
     }
 }
 
+let randomTop10 = () => {
+    return (Math.floor(Math.random() * 10))
+};
+
+
 let hnContentAPI = async () => {
 
     try {
 
+        let rTop10 = randomTop10();
         let ids = await topNewsIdAPI();
-        
-        let r = await fetch(`https://hacker-news.firebaseio.com/v0/item/${ids[0]}.json?print=pretty`)
-        
+        let r = await fetch(`https://hacker-news.firebaseio.com/v0/item/${ids[rTop10]}.json?print=pretty`);
+
         let hnContent = await r.json();
-        
-        // console.log(hnContent.title);
-        // console.log(hnContent.url);
-        // console.log(`https://news.ycombinator.com/item?id=${ids[i]}`);
+
         return hnContent;
-        
+
     } catch (error) {
         console.log(error);
     }
-        
+
 }
 
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('hackernews')
-        .setDescription('Returns the current top new in Hacker News website'),
+        .setDescription('Returns one randomized top 10 news from the Hacker News website'),
     async execute(interaction, client) {
         const hnId = await topNewsIdAPI();
         const infoObject = await hnContentAPI();
@@ -46,13 +48,13 @@ module.exports = {
             .setColor(0x18e1ee)
             .setTitle(`${infoObject.title}`)
             .setURL(`${infoObject.url}`)
-            .setDescription(`This is the current Hacker News top story`)
+            .setDescription(`This is a current top 10 Hacker News story`)
             .setImage('https://cdn.discordapp.com/attachments/1014321307556524142/1050513193845399683/Zana_a_Hacker_News_website_logo_startup_illustration_the_logo_h_c1f323e6-f515-4117-827a-e4db37f576d3.png')
             .setTimestamp(Date.now())
             .setAuthor({
                 name: 'Click here to access the comments section in HackerNews 👈',
                 iconURL: 'https://cdn.discordapp.com/attachments/1014321307556524142/1050513193845399683/Zana_a_Hacker_News_website_logo_startup_illustration_the_logo_h_c1f323e6-f515-4117-827a-e4db37f576d3.png',
-                url: `https://news.ycombinator.com/item?id=${hnId[0]}`,
+                url: `https://news.ycombinator.com/item?id=${infoObject.id}`,
             })
             .setFooter({
                 iconURL: 'https://cdn.discordapp.com/attachments/1014321307556524142/1050513193845399683/Zana_a_Hacker_News_website_logo_startup_illustration_the_logo_h_c1f323e6-f515-4117-827a-e4db37f576d3.png',
